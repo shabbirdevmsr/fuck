@@ -11,7 +11,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       debugShowCheckedModeBanner: false,
       home: ClipboardPage(),
     );
@@ -19,6 +19,8 @@ class MyApp extends StatelessWidget {
 }
 
 class ClipboardPage extends StatefulWidget {
+  const ClipboardPage({super.key});
+
   @override
   State<ClipboardPage> createState() => _ClipboardPageState();
 }
@@ -32,32 +34,26 @@ class _ClipboardPageState extends State<ClipboardPage> {
     setState(() {
       clipboardText = data?.text ?? "";
       status = clipboardText.isEmpty
-          ? "Clipboard empty"
+          ? "Clipboard is empty"
           : "Clipboard loaded";
     });
   }
 
   Future<void> sendToServer() async {
     if (clipboardText.isEmpty) {
-      setState(() {
-        status = "Nothing to send";
-      });
+      setState(() => status = "Nothing to send");
       return;
     }
 
     try {
       await http.post(
-        Uri.parse("https://example.com/api"), // CHANGE THIS
+        Uri.parse("https://example.com/api"),
         headers: {"Content-Type": "application/json"},
         body: '{"text": "$clipboardText"}',
       );
-      setState(() {
-        status = "Sent successfully";
-      });
+      setState(() => status = "Sent successfully");
     } catch (e) {
-      setState(() {
-        status = "Send failed";
-      });
+      setState(() => status = "Send failed");
     }
   }
 
@@ -73,21 +69,27 @@ class _ClipboardPageState extends State<ClipboardPage> {
               onPressed: readClipboard,
               child: const Text("Read Clipboard"),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 12),
             Expanded(
-              child: SingleChildScrollView(
-                child: Text(
-                  clipboardText,
-                  style: const TextStyle(fontSize: 16),
+              child: Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey),
+                ),
+                child: SingleChildScrollView(
+                  child: Text(
+                    clipboardText,
+                    style: const TextStyle(fontSize: 16),
+                  ),
                 ),
               ),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 12),
             ElevatedButton(
               onPressed: sendToServer,
               child: const Text("Send to Server"),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 8),
             Text(status),
           ],
         ),
